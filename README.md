@@ -126,6 +126,12 @@ The project demonstrates how distributed systems monitor:
 - latency spikes
 - production bottlenecks
 
+> Note:
+>
+> Redis, PostgreSQL, and RabbitMQ are included as architecture components to demonstrate how latency monitoring and observability integrate within distributed backend systems.
+>
+> This repository primarily focuses on P95/P99 latency analysis, Prometheus metrics, Grafana observability, and production monitoring concepts.
+
 ---
 
 # Prometheus Metrics Monitoring
