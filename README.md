@@ -1,19 +1,22 @@
 # Understanding P95 and P99 Latency in Production Systems
 
-A production-focused Node.js project demonstrating:
+![Grafana Dashboard](./screenshots/grafana-latency-dashboard.png)
 
-- P95 vs P99 latency
+A production-focused Node.js observability and latency monitoring project demonstrating:
+
+- P95 and P99 latency
 - Tail latency behavior
-- Real-world performance bottlenecks
+- Real-world production bottlenecks
 - Observability with Prometheus & Grafana
-- Production monitoring strategies
-- Node.js performance considerations
+- Distributed systems monitoring
+- Node.js performance engineering
+- Production latency analysis
 
 ---
 
 # Why This Project Exists
 
-In many production systems, average latency can look perfectly healthy while users still experience slow requests.
+In many production systems, average latency can look perfectly healthy while users still experience severe delays.
 
 Example:
 
@@ -24,9 +27,21 @@ Example:
 
 The average response time may still appear acceptable.
 
-However, some users experience severe delays.
+However:
+- some users experience major delays
+- P95 increases significantly
+- P99 becomes extremely high
 
-This is where P95 and P99 latency become critical.
+This is where tail latency becomes critical.
+
+Modern production systems monitor:
+- P50
+- P95
+- P99
+- throughput
+- error rates
+
+instead of relying only on averages.
 
 ---
 
@@ -34,10 +49,15 @@ This is where P95 and P99 latency become critical.
 
 ## P95 Latency
 
-95% of requests are completed faster than this value.
+95% of requests complete faster than this value.
 
-If P95 = 300ms:
+If:
 
+```txt
+P95 = 300ms
+```
+
+Then:
 - 95% requests are below 300ms
 - 5% requests are slower than 300ms
 
@@ -45,14 +65,87 @@ If P95 = 300ms:
 
 ## P99 Latency
 
-99% of requests are completed faster than this value.
+99% of requests complete faster than this value.
 
-If P99 = 2s:
+If:
 
+```txt
+P99 = 2s
+```
+
+Then:
 - 99% requests are below 2 seconds
 - 1% requests are extremely slow
 
-P99 helps identify tail latency problems in distributed systems.
+P99 is critical for identifying:
+- tail latency
+- production bottlenecks
+- slow dependencies
+- distributed system failures
+
+---
+
+# Production Monitoring Dashboard
+
+![P99 Tail Latency](./screenshots/p99-tail-latency-spike.png)
+
+The Grafana dashboard demonstrates:
+
+- Request throughput
+- P95 latency
+- P99 latency
+- Average response time
+- Tail latency spikes
+- Real-time monitoring
+
+This simulates real-world production monitoring scenarios where average latency may appear healthy while users still experience performance degradation.
+
+---
+
+# Production Architecture
+
+![Production Architecture](./screenshots/production-architecture.png)
+
+This architecture simulates a production-grade observability and monitoring environment.
+
+Components included:
+
+- Client Applications
+- Load Balancer
+- Node.js API
+- Redis Cache
+- PostgreSQL
+- RabbitMQ
+- Prometheus
+- Grafana
+
+The project demonstrates how distributed systems monitor:
+- request throughput
+- P95 latency
+- P99 latency
+- latency spikes
+- production bottlenecks
+
+---
+
+# Prometheus Metrics Monitoring
+
+![Prometheus Metrics](./screenshots/prometheus-metrics-dashboard.png)
+
+The application exports Prometheus histogram metrics for:
+
+- Request duration
+- Request count
+- Histogram buckets
+- Latency distribution
+- Quantile calculations
+
+Prometheus metrics are used to calculate:
+- P50 latency
+- P95 latency
+- P99 latency
+
+This demonstrates production-grade observability practices commonly used in distributed backend systems.
 
 ---
 
@@ -65,8 +158,8 @@ High P99 latency is commonly caused by:
 - Redis cache misses
 - RabbitMQ queue backlog
 - External API delays
-- CPU spikes
 - Event loop blocking
+- CPU spikes
 - Large payload serialization
 - Connection pool exhaustion
 - Retry storms in microservices
@@ -75,9 +168,9 @@ High P99 latency is commonly caused by:
 
 ---
 
-# Node.js Specific Performance Issues
+# Node.js Performance Considerations
 
-This project also demonstrates common Node.js latency problems:
+This project also demonstrates common Node.js performance issues:
 
 - Event loop blocking
 - Heavy synchronous processing
@@ -86,23 +179,7 @@ This project also demonstrates common Node.js latency problems:
 - CPU-bound operations
 - Unoptimized async flows
 
----
-
-# Architecture
-
-```mermaid
-flowchart LR
-
-Client --> API["Node.js API"]
-API --> Metrics["Prometheus Metrics"]
-Metrics --> Prometheus["Prometheus"]
-Prometheus --> Grafana["Grafana Dashboard"]
-
-API --> Redis["Redis Cache"]
-API --> PostgreSQL["PostgreSQL"]
-
-API --> RabbitMQ["RabbitMQ Queue"]
-```
+These issues commonly contribute to increased tail latency in backend systems.
 
 ---
 
@@ -117,15 +194,14 @@ p95-p99-latency-production-systems
 ├── prometheus
 │   └── prometheus.yml
 │
-├── grafana
-│
-├── diagrams
+├── screenshots
 │
 ├── docs
 │   ├── architecture.md
 │   └── production-checklist.md
 │
 ├── docker-compose.yml
+├── Dockerfile
 ├── package.json
 └── README.md
 ```
@@ -142,10 +218,47 @@ npm install
 
 ---
 
-## Start the API
+## Start Services
 
 ```bash
-npm run dev
+docker compose up --build
+```
+
+---
+
+# API
+
+Open:
+
+```txt
+http://localhost:3000
+```
+
+---
+
+# Grafana Dashboard
+
+Open:
+
+```txt
+http://localhost:3001
+```
+
+Default credentials:
+
+```txt
+admin
+admin
+```
+
+---
+
+# Prometheus
+
+Open:
+
+```txt
+http://localhost:9090
 ```
 
 ---
@@ -168,10 +281,13 @@ Returns available endpoints.
 GET /fast
 ```
 
-Simulates normal fast API behavior.
+Simulates normal low-latency API behavior.
 
 Approximate latency:
-- ~50ms
+
+```txt
+~50ms
+```
 
 ---
 
@@ -184,7 +300,10 @@ GET /slow
 Simulates slow production dependency behavior.
 
 Approximate latency:
-- ~2000ms
+
+```txt
+~2000ms
+```
 
 ---
 
@@ -194,14 +313,14 @@ Approximate latency:
 GET /random-latency
 ```
 
-Simulates realistic production traffic where:
-- Most requests are fast
-- Small percentage become slow
+Simulates realistic production traffic patterns where:
+- most requests are fast
+- a small percentage become extremely slow
 
 This helps demonstrate:
 - P95 latency
 - P99 latency
-- Tail latency spikes
+- tail latency spikes
 
 ---
 
@@ -212,6 +331,51 @@ GET /metrics
 ```
 
 Prometheus metrics endpoint.
+
+---
+
+# Generate Load Testing Traffic
+
+Run continuous traffic simulation:
+
+```bash
+while true; do
+  curl -s http://localhost:3000/random-latency > /dev/null
+  sleep 0.2
+done
+```
+
+This generates realistic traffic patterns that produce:
+- P95 spikes
+- P99 spikes
+- latency fluctuations
+- throughput variations
+
+The generated traffic can be monitored directly inside Grafana dashboards.
+
+---
+
+# Monitoring Queries
+
+## P95 Latency
+
+```promql
+histogram_quantile(
+  0.95,
+  sum(rate(http_request_duration_seconds_bucket[5m])) by (le)
+)
+```
+
+---
+
+## P99 Latency
+
+```promql
+histogram_quantile(
+  0.99,
+  sum(rate(http_request_duration_seconds_bucket[5m])) by (le)
+)
+```
 
 ---
 
@@ -227,14 +391,15 @@ Average latency may still appear acceptable.
 But:
 - P95 increases significantly
 - P99 becomes extremely high
-- User experience degrades badly
+- user experience degrades badly
 
-This is why modern production systems monitor:
+This is why modern distributed systems monitor:
 - P50
 - P95
 - P99
-- Error rate
-- Throughput
+- throughput
+- error rate
+- queue backlog
 
 instead of relying only on averages.
 
@@ -242,17 +407,23 @@ instead of relying only on averages.
 
 # Observability Stack
 
-This repository is designed to integrate with:
+This repository demonstrates observability integration using:
 
 - Prometheus
 - Grafana
+- Docker
+- Node.js Metrics
+- Histogram Monitoring
+- Time-Series Monitoring
+
+The architecture can also integrate with:
 - ELK Stack
 - OpenTelemetry
 - CloudWatch
 
 ---
 
-# Recommended Monitoring Metrics
+# Recommended Production Metrics
 
 Production systems should monitor:
 
@@ -293,10 +464,25 @@ Average latency tells you how the system behaves normally.
 P95 and P99 tell you how the system behaves when things start failing.
 
 In distributed systems, tail latency directly impacts:
-- User experience
-- Scalability
-- Reliability
+- user experience
+- scalability
+- reliability
 - SLA compliance
+
+---
+
+# Engineering Focus Areas
+
+This repository focuses on:
+
+- Production Engineering
+- Observability
+- Distributed Systems
+- Performance Optimization
+- Scalability Engineering
+- Tail Latency Analysis
+- Monitoring Architecture
+- Node.js Performance
 
 ---
 
