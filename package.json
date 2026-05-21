@@ -1,0 +1,14 @@
+{
+  "name": "p95-p99-latency-production-systems",
+  "version": "1.0.0",
+  "description": "Production-focused P95/P99 latency demo for Node.js backend systems",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.3",
+    "prom-client": "^15.1.0"
+  }
+}
