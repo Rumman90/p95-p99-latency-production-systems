@@ -2,6 +2,7 @@
   "name": "p95-p99-latency-production-systems",
   "version": "1.0.0",
   "description": "Production-focused P95/P99 latency demo for Node.js backend systems",
+  "license": "MIT",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
